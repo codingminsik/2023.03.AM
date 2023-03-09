@@ -1,4 +1,3 @@
-
 package com.KoreaIT.java.AM;
 
 import java.util.ArrayList;
@@ -42,37 +41,74 @@ public class Main {
 			} else if (command.equals("article write")) {
 				int id = lastArticleId + 1;
 				System.out.print("제목 : ");
+				String regDate = Util.getNowDateTimeStr();
 				String title = sc.nextLine();
 				System.out.print("내용 : ");
 				String body = sc.nextLine();
 
-				Article article = new Article(id, title, body);
+				Article article = new Article(id, regDate, title, body);
 				articles.add(article);
 
 				System.out.printf("%d번글이 생성되었습니다\n", id);
 				lastArticleId++;
 
-			} else if (command.startsWith("article detail ")) {
+			} else if (command.startsWith("article detail")) {
 
 				String[] cmdDiv = command.split(" ");
 
+				if (cmdDiv.length < 3) {
+					System.out.println("명령어를 확인해주세요");
+					continue;
+				}
+
 				int id = Integer.parseInt(cmdDiv[2]);
 
-				boolean found = false;
+				Article foundArticle = null;
 
 				for (int i = 0; i < articles.size(); i++) {
 					Article article = articles.get(i);
 					if (article.id == id) {
-						found = true;
+						foundArticle = article;
 						break;
 					}
 				}
 
-				if (found == false) {
+				if (foundArticle == null) {
 					System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
-				} else {
-					System.out.printf("%d번 게시물 있던데?\n", id);
+					continue;
 				}
+				System.out.println("번호 : " + foundArticle.id);
+				System.out.println("날짜 : " + foundArticle.regDate);
+				System.out.println("제목 : " + foundArticle.title);
+				System.out.println("내용 : " + foundArticle.body);
+
+			} else if (command.startsWith("article delete")) {
+
+				String[] cmdDiv = command.split(" ");
+
+				if (cmdDiv.length < 3) {
+					System.out.println("명령어를 확인해주세요");
+					continue;
+				}
+
+				int id = Integer.parseInt(cmdDiv[2]);
+
+				int foundIndex = -1;
+				for (int i = 0; i < articles.size(); i++) {
+					Article article = articles.get(i);
+					if (article.id == id) {
+						foundIndex = i;
+						break;
+					}
+				}
+
+				if (foundIndex == -1) {
+					System.out.printf("%d번 게시물은 존재하지 않습니다\n", id);
+					continue;
+				}
+
+				articles.remove(foundIndex);
+				System.out.println(id + "번 글을 삭제했습니다");
 
 			} else {
 				System.out.println("존재하지 않는 명령어입니다");
@@ -87,11 +123,13 @@ public class Main {
 
 class Article {
 	int id;
+	String regDate;
 	String title;
 	String body;
 
-	Article(int id, String title, String body) {
+	Article(int id, String regDate, String title, String body) {
 		this.id = id;
+		this.regDate = regDate;
 		this.title = title;
 		this.body = body;
 	}
